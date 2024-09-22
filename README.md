@@ -3,7 +3,6 @@
 
 Anonymous airdrop using zero knowledge proof with zokrates.
 
-
 ## Commands
 
 - `make compile` -> Compiles circuits and contracts
@@ -24,3 +23,7 @@ Tests use `zokrates-js` to compile on the fly the circuits and create dynamic pr
 3. Admin computes the merkle root and deploys the contract with it.
 4. Users take public merkle tree and use it to create proofs.
 5. Users claim airdrop without revealing commitment associated. 
+
+## TODO:
+
+Optimize proof generation with fixture and scripts instead of computing each time
