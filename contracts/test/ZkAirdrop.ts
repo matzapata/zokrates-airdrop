@@ -6,7 +6,6 @@ import fs from "fs"
 import path from "path"
 
 const CLAIM_AMOUNT = 100;
-const ERC20_SUPPLY = 100000;
 
 describe("ZkAirdrop", function () {
 
@@ -19,38 +18,30 @@ describe("ZkAirdrop", function () {
         const Verifier = await hre.ethers.getContractFactory("Verifier");
         const verifier = await Verifier.deploy()
 
-        // deploy erc20
-        const Token = await hre.ethers.getContractFactory("AirdropToken");
-        const token = await Token.deploy(ERC20_SUPPLY)
-
         // crete claim trees 
         const mimcsponge = await buildMimcSponge();
 
         // deploy ZkAirdrop
         const { root } = loadProofFixture()
         const ZkAirdrop = await hre.ethers.getContractFactory("ZkAirdrop");
-        const zkAirdrop = await ZkAirdrop.deploy(await verifier.getAddress(), toHex(root), await token.getAddress(), CLAIM_AMOUNT);
+        const zkAirdrop = await ZkAirdrop.deploy(await verifier.getAddress(), toHex(root), CLAIM_AMOUNT, "ZK Airdrop", "ZKA");
 
-        // transfer total supply to contract
-        await token.connect(owner).transfer(await zkAirdrop.getAddress(), ERC20_SUPPLY)
-
-
-        return { zkAirdrop, mimcsponge, verifier, owner, token, claimer };
+        return { zkAirdrop, mimcsponge, verifier, owner, claimer };
     }
 
     describe("#claim", () => {
         it("should work", async () => {
-            const { zkAirdrop, token, claimer } = await loadFixture(deployFixture);
+            const { zkAirdrop, claimer } = await loadFixture(deployFixture);
             const { proof, nullifierHash } = loadProofFixture()
 
-            const balanceBefore = await token.balanceOf(claimer)
+            const balanceBefore = await zkAirdrop.balanceOf(claimer)
 
             await expect(zkAirdrop.connect(claimer).claim(proof.proof as any, toHex(nullifierHash)))
                 .not.to.be.reverted
 
-            const balanceAfter = await token.balanceOf(claimer)
+            const balanceAfter = await zkAirdrop.balanceOf(claimer)
 
-            expect(balanceAfter - balanceBefore == BigInt(CLAIM_AMOUNT)).to.be.true
+            expect(balanceAfter - balanceBefore == BigInt(CLAIM_AMOUNT * 10 ** 18)).to.be.true
         })
 
         it('should prevent double claim', async () => {
