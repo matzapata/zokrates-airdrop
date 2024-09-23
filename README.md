@@ -6,15 +6,14 @@ Anonymous airdrop using zero knowledge proof with zokrates.
 ## Commands
 
 - `make compile` -> Compiles circuits and contracts
-- `make compile-circuits` -> Compile circuits
+- `make compile-circuits` -> Compile circuits and generate fixture for tests
 - `make compile-contracts` -> Compile contracts
 - `make tests` -> runs tests
-- `make proof` -> Takes `contracts/input.json` to create a proof for the circuit
 
 ## Details
 
 Circuits in `contracts/circuits`.
-Tests use `zokrates-js` to compile on the fly the circuits and create dynamic proofs leveraging fixtures.
+Script in `scripts/compile-circuits.ts` uses `zokrates-js` to compile on the circuits, generate the verifier contract and a fixture proof for the tests.
 
 ## How it works
 
@@ -23,7 +22,3 @@ Tests use `zokrates-js` to compile on the fly the circuits and create dynamic pr
 3. Admin computes the merkle root and deploys the contract with it.
 4. Users take public merkle tree and use it to create proofs.
 5. Users claim airdrop without revealing commitment associated. 
-
-## TODO:
-
-Optimize proof generation with fixture and scripts instead of computing each time
